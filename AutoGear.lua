@@ -2594,21 +2594,13 @@ AutoGearFrame:SetScript("OnEvent", function (this, event, arg1, arg2, arg3, arg4
 	elseif event == "CONFIRM_LOOT_ROLL" or event == "CONFIRM_DISENCHANT_ROLL" then
 		ConfirmLootRoll(arg1, arg2)
 	elseif event == "CHAT_MSG_LOOT" then --when receiving a new item
-		local message, name, guid = arg1, arg5, arg12
+		local message = arg1
 		local pattern1 = LOOT_ITEM_SELF_MULTIPLE:gsub("%%s", "(.+)"):gsub("%%d", "(%%d+)"):gsub("^", "^")
 		local pattern2 = LOOT_ITEM_PUSHED_SELF_MULTIPLE:gsub("%%s", "(.+)"):gsub("%%d", "(%%d+)"):gsub("^", "^")
 		local pattern3 = LOOT_ITEM_CREATED_SELF_MULTIPLE:gsub("%%s", "(.+)"):gsub("%%d", "(%%d+)"):gsub("^", "^")
 		local pattern4 = LOOT_ITEM_SELF:gsub("%%s", "(.+)"):gsub("^", "^")
 		local pattern5 = LOOT_ITEM_PUSHED_SELF:gsub("%%s", "(.+)"):gsub("^", "^")
 		local pattern6 = LOOT_ITEM_CREATED_SELF:gsub("%%s", "(.+)"):gsub("^", "^")
-
-		local uname, userver = UnitFullName("player")
-		local fullName = uname .. "-" .. userver
-
-		if (guid and guid ~= UnitGUID("player"))
-		or ((name ~= uname) and (name ~= fullName)) then
-			return
-		end
 
 		local link, quantity = message:match(pattern1)
 		if not link then
@@ -3503,6 +3495,7 @@ function AutoGearReadItemInfo(inventoryID, lootRollID, container, slot, questRew
 		if not info.link then
 			info.link = info.item:GetItemLink()
 		end
+		if not tooltipData then tooltipData = C_TooltipInfo and C_TooltipInfo.GetBagItem(container, slot) end
 		if not tooltipData then AutoGearTooltip:SetBagItem(container, slot) end
 	elseif inventoryID then
 		info.item = Item:CreateFromEquipmentSlot(inventoryID)
@@ -3514,23 +3507,41 @@ function AutoGearReadItemInfo(inventoryID, lootRollID, container, slot, questRew
 		if not info.link then
 			info.link = info.item:GetItemLink()
 		end
-		if not tooltipData then AutoGearTooltip:SetInventoryItem("player", inventoryID) end
+		if not tooltipData then
+			if C_TooltipInfo and C_TooltipInfo.GetInventoryItem then
+				tooltipData = C_TooltipInfo.GetInventoryItem("player", inventoryID)
+			else
+				AutoGearTooltip:SetInventoryItem("player", inventoryID)
+			end
+		end
 	elseif lootRollID then
 		if not info.link then
 			info.link = GetLootRollItemLink(lootRollID)
 		end
 		info.item = Item:CreateFromItemLink(select(3,ExtractHyperlinkString(info.link)))
-		if not tooltipData then AutoGearTooltip:SetLootRollItem(lootRollID) end
+		if C_TooltipInfo and C_TooltipInfo.GetLootRollItem then
+			tooltipData = C_TooltipInfo.GetLootRollItem(lootRollID)
+		else
+			AutoGearTooltip:SetLootRollItem(lootRollID)
+		end
 	elseif questRewardIndex then
 		if not info.link then
 			info.link = GetQuestItemLink("choice", questRewardIndex)
 		end
 		info.item = Item:CreateFromItemLink(select(3,ExtractHyperlinkString(info.link)))
-		if not tooltipData then AutoGearTooltip:SetQuestItem("choice", questRewardIndex) end
+		if C_TooltipInfo and C_TooltipInfo.GetQuestItem then
+			tooltipData = C_TooltipInfo.GetQuestItem("choice", questRewardIndex)
+		else
+			AutoGearTooltip:SetQuestItem("choice", questRewardIndex)
+		end
 	elseif link then
 		info.link = link
 		info.item = Item:CreateFromItemLink(select(3,ExtractHyperlinkString(info.link)))
-		if not tooltipData then AutoGearTooltip:SetHyperlink(info.link) end
+		if C_TooltipInfo and C_TooltipInfo.GetHyperlink then
+			tooltipData = C_TooltipInfo.GetHyperlink(info.link)
+		else
+			AutoGearTooltip:SetHyperlink(info.link)
+		end
 	else
 		AutoGearPrint(
 			"inventoryID: "..tostring(inventoryID or "nil")..
