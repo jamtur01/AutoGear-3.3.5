@@ -501,9 +501,12 @@ end
 -- lookup. Define it unconditionally here to guarantee the correct contract;
 -- UnitClass on 3.3.5a returns (localizedName, token).
 do
+	-- Mirrors AutoGear's AutoGearClassIDList. Only the first ten are playable on
+	-- 3.3.5a; Monk/DemonHunter/Evoker are included for parity and custom servers.
 	local CLASS_TOKEN_TO_ID = {
 		WARRIOR = 1, PALADIN = 2, HUNTER = 3, ROGUE = 4, PRIEST = 5,
-		DEATHKNIGHT = 6, SHAMAN = 7, MAGE = 8, WARLOCK = 9, DRUID = 11,
+		DEATHKNIGHT = 6, SHAMAN = 7, MAGE = 8, WARLOCK = 9, MONK = 10,
+		DRUID = 11, DEMONHUNTER = 12, EVOKER = 13,
 	}
 	function UnitClassBase(unit)
 		local token = select(2, UnitClass(unit))
