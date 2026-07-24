@@ -571,6 +571,18 @@ if not PaperDollItemsFrame then
 end
 
 --------------------------------------------------------------------------------
+-- SOUNDKIT: the sound-constant table was added in Legion. On 3.3.5a PlaySound
+-- takes a string sound name, so map the members AutoGear uses to those names;
+-- the __index fallback keeps any other member a valid, playable string.
+--------------------------------------------------------------------------------
+if not SOUNDKIT then
+	SOUNDKIT = setmetatable({
+		IG_MAINMENU_OPTION_CHECKBOX_ON = "igMainMenuOptionCheckBoxOn",
+		IG_MAINMENU_OPTION_CHECKBOX_OFF = "igMainMenuOptionCheckBoxOff",
+	}, { __index = function() return "igMainMenuOptionCheckBoxOn" end })
+end
+
+--------------------------------------------------------------------------------
 -- ColorMixin helper: AutoGear calls RAID_CLASS_COLORS[class]:WrapTextInColorCode.
 -- 3.3.5a class colors are plain {r,g,b} tables, so attach the method.
 --------------------------------------------------------------------------------
