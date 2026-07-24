@@ -4,7 +4,6 @@
 ## Author: Synthetikaryote, BujuArena
 ## OptionalDeps: Pawn, AtlasLoot, AtlasLootClassic
 
-TaintLess.xml
 Compat335.lua
 localization.core.lua
 localization.ru.lua
