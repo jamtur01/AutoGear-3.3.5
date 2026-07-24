@@ -527,6 +527,23 @@ if not GetDetailedItemLevelInfo then
 	end
 end
 
+-- Max-level helpers: 3.3.5a has neither GetMaxPlayerLevel nor
+-- GetMaxLevelForExpansionLevel (both added in later expansions); it exposes the
+-- MAX_PLAYER_LEVEL constant and GetExpansionLevel instead.
+if not GetMaxLevelForExpansionLevel then
+	local EXPANSION_MAX_LEVEL = { [0] = 60, [1] = 70, [2] = 80 }
+	function GetMaxLevelForExpansionLevel(expansionLevel)
+		return EXPANSION_MAX_LEVEL[expansionLevel] or MAX_PLAYER_LEVEL or 80
+	end
+end
+
+if not GetMaxPlayerLevel then
+	function GetMaxPlayerLevel()
+		return MAX_PLAYER_LEVEL
+			or GetMaxLevelForExpansionLevel(GetExpansionLevel and GetExpansionLevel() or 2)
+	end
+end
+
 --------------------------------------------------------------------------------
 -- Global strings modern AutoGear references that 3.3.5a lacks. The addon uses
 -- these only in string.find(tooltipText, STRING); an absent (nil) value would
