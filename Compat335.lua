@@ -555,6 +555,15 @@ if not ITEM_BIND_TO_BNETACCOUNT then
 end
 
 --------------------------------------------------------------------------------
+-- PaperDollItemsFrame: introduced in Cataclysm. On 3.3.5a the equipment slot
+-- buttons (CharacterHeadSlot, ...) are children of PaperDollFrame instead.
+-- AutoGear only iterates its children to build cosmetic slot-name labels.
+--------------------------------------------------------------------------------
+if not PaperDollItemsFrame then
+	PaperDollItemsFrame = PaperDollFrame or CreateFrame("Frame")
+end
+
+--------------------------------------------------------------------------------
 -- ColorMixin helper: AutoGear calls RAID_CLASS_COLORS[class]:WrapTextInColorCode.
 -- 3.3.5a class colors are plain {r,g,b} tables, so attach the method.
 --------------------------------------------------------------------------------
