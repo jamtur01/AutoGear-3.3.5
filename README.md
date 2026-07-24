@@ -1,5 +1,7 @@
 # AutoGear
 
+> **3.3.5a (WotLK) port.** This fork runs on the 3.3.5a Wrath of the Lich King client (interface 30300) used by private servers. `Compat335.lua` provides a compatibility layer that recreates the modern client APIs AutoGear relies on (`Enum.*`, the `Item` mixin, `GetItemInfoInstant`, `C_Item`/`C_GossipInfo`/`C_PlayerInfo`/`C_Cursor`, `UnitClassBase`, `ExtractHyperlinkString`, and `ColorMixin:WrapTextInColorCode`) on top of the 3.3.5a globals. The addon logic itself is unchanged, so upstream fixes remain easy to merge.
+
 AutoGear is a World Of Warcraft addon that automatically rolls on and equips loot according to stat weights like WoWhead filters. AutoGear rolls "need" on upgrades and "greed" otherwise.
 
 AutoGear also optionally interacts with quest NPCs, automatically accepting and completing quests, including deciding the best quest reward based on the same stat weights. If no item is deemed to be an upgrade, the item worth the most vendor gold is chosen.
