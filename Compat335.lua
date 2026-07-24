@@ -495,8 +495,12 @@ end
 --------------------------------------------------------------------------------
 -- Miscellaneous runtime globals that modern AutoGear assumes exist.
 --------------------------------------------------------------------------------
-if not UnitClassBase then
-	-- WotLK class IDs; UnitClass on 3.3.5a returns only (localizedName, token).
+-- UnitClassBase must yield (classToken, numericClassID). Some 3.3.5a private-
+-- server clients ship a UnitClassBase that instead returns (localizedName,
+-- token) like UnitClass, which breaks AutoGear's numeric AutoGearClassIDList
+-- lookup. Define it unconditionally here to guarantee the correct contract;
+-- UnitClass on 3.3.5a returns (localizedName, token).
+do
 	local CLASS_TOKEN_TO_ID = {
 		WARRIOR = 1, PALADIN = 2, HUNTER = 3, ROGUE = 4, PRIEST = 5,
 		DEATHKNIGHT = 6, SHAMAN = 7, MAGE = 8, WARLOCK = 9, DRUID = 11,
