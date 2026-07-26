@@ -332,8 +332,16 @@ function itemMethods:GetItemQualityColor()
 	if not quality then return end
 	return GetItemQualityColor(quality)
 end
-
-function itemMethods:GetItemGUID() return nil end
+-- 3.3.5a has no per-item GUIDs, but AutoGear uses guid equality to tell item
+-- instances apart (e.g. equipping two of the same 1H weapon, ring, or trinket
+-- in both slots). Return a stable per-location synthetic id so distinct items
+-- compare unequal and the same physical item compares equal.
+function itemMethods:GetItemGUID()
+	if self._bag ~= nil then return "ag-bag:" .. self._bag .. ":" .. tostring(self._slot) end
+	if self._inv ~= nil then return "ag-equip:" .. self._inv end
+	local link = self:_resolveLink()
+	return link and ("ag-link:" .. link) or nil
+end
 
 function itemMethods:IsItemDataCached()
 	local link = self:_resolveLink()
@@ -602,4 +610,18 @@ if RAID_CLASS_COLORS then
 			color.WrapTextInColorCode = WrapTextInColorCode
 		end
 	end
+end
+
+--------------------------------------------------------------------------------
+-- Auto-scan on bag changes. AutoGear only queues an automatic scan from
+-- CHAT_MSG_LOOT, so items gained via mail, vendor, the auction house, crafting,
+-- or trade (which fire BAG_UPDATE, not a loot message) never trigger one. Watch
+-- BAG_UPDATE and queue a scan; AutoGearQueueScan coalesces the bursts.
+--------------------------------------------------------------------------------
+do
+	local bagWatcher = CreateFrame("Frame")
+	bagWatcher:RegisterEvent("BAG_UPDATE")
+	bagWatcher:SetScript("OnEvent", function()
+		if AutoGearQueueScan then AutoGearQueueScan() end
+	end)
 end
