@@ -213,7 +213,22 @@ end
 C_Item = C_Item or {}
 C_Item.GetItemInfo = C_Item.GetItemInfo or GetItemInfo
 C_Item.GetItemInfoInstant = C_Item.GetItemInfoInstant or GetItemInfoInstant
-C_Item.GetItemCount = C_Item.GetItemCount or GetItemCount
+-- GetItemCount excludes equipped items on 3.3.5a (as on all clients). AutoGear
+-- uses it to decide whether you own enough copies to fill two slots with the
+-- same item (dual-wield, rings, trinkets) and to gate loot-roll greed, so a
+-- worn copy must count. All AutoGear GetItemCount calls route through this, so
+-- define it unconditionally (a private client may ship an equipped-excluding
+-- C_Item.GetItemCount, which a define-if-absent guard would preserve).
+function C_Item.GetItemCount(item, includeBank)
+	local count = GetItemCount(item, includeBank) or 0
+	local id = tonumber(item) or (type(item) == "string" and tonumber(item:match("item:(%d+)")))
+	if id then
+		for slot = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
+			if GetInventoryItemID("player", slot) == id then count = count + 1 end
+		end
+	end
+	return count
+end
 
 if not C_Item.GetItemInventoryTypeByID then
 	function C_Item.GetItemInventoryTypeByID(item)
